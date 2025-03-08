@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +44,11 @@ public class UsuarioControlador {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
+
+    // Inyectar el codificador de contraseñas (BCryptPasswordEncoder)
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
 
     @GetMapping("")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
@@ -83,6 +89,7 @@ public class UsuarioControlador {
     public String guardarUsuario(@Valid @ModelAttribute Usuario usuario,
                                  @RequestParam("role") String role, // Recibimos el parámetro del rol
                                  @RequestParam("fecha") String fecha, // Recibimos la fecha desde el formulario
+                                 @RequestParam("password") String password, // Recibimos la contraseña del formulario
                                  BindingResult result,
                                  RedirectAttributes flash) {
         if (result.hasErrors()) {
@@ -106,6 +113,9 @@ public class UsuarioControlador {
 
             // Asignar el estado como ACTIVO
             usuario.setEstado(Estado.ACTIVO);
+
+            // Encriptar la contraseña antes de asignarla
+            usuario.setPassword(passwordEncoder.encode(password));
 
             // Asignar la fecha de creación
             usuario.setFecha(fechaCreacion);
@@ -233,18 +243,15 @@ public class UsuarioControlador {
     @GetMapping("/exportarInactivos")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void exportarUsuariosInactivosEnPDF(HttpServletResponse response) throws IOException {
-        // Obtener todos los usuarios y filtrar los inactivos
-        List<Usuario> usuariosInactivos = usuarioServicio.listarUsuarios().stream()
-                .filter(usuario -> usuario.getEstado() == Estado.INACTIVO)
-                .collect(Collectors.toList());
+        // Obtener todos los usuarios
+        List<Usuario> usuarios = usuarioServicio.listarUsuarios();
 
         // Crear el exportador de PDF
         UsuariosInactivosExporterPDF exporter = new UsuariosInactivosExporterPDF();
 
         // Exportar el PDF
-        exporter.exportar(usuariosInactivos, response);
+        exporter.exportar(usuarios, response);
     }
-
 
 }
 

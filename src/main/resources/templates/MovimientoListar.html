@@ -26,6 +26,29 @@
             </div>
         </div>
 
+        <!-- Alerta de éxito al registrar entrada -->
+        <div th:if="${mensaje}" class="alert alert-success" role="alert">
+            <span th:text="${mensaje}"></span>
+            <a href="/inventario" class="btn btn-primary">Ver detalle</a>
+        </div>
+
+        <!-- Alerta de éxito al registrar salida -->
+        <div th:if="${mensajeSalida}" class="alert alert-danger" role="alert">
+            <span th:text="${mensajeSalida}"></span>
+            <a href="/inventario" class="btn btn-primary">Ver detalle</a>
+        </div>
+
+        <!-- Formulario para generar el reporte -->
+        <form action="/movimientos/reporte" method="get" class="d-flex mb-4">
+            <button type="submit" class="btn btn-primary">Generar Reporte de Entrada y Salida</button>
+        </form>
+
+        <!-- Formulario para generar el reporte de ingreso/utilidad -->
+        <form action="/movimientos/reporteUtilidad" method="get" class="d-flex mb-4">
+            <button type="submit" class="btn btn-success">Generar Reporte de Ingreso y Utilidad</button>
+        </form>
+
+
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
@@ -36,106 +59,106 @@
                                     <h4 class="card-title">REGISTRAR ENTRADA</h4>
                                 </div>
                                 <div class="card-body">
-                            <form th:action="@{/movimientos/entrada}" th:object="${movimientoEntrada}" method="post">
+                                    <form th:action="@{/movimientos/entrada}" th:object="${movimientoEntrada}" method="post">
 
-                                <div class="col-md-6 mb-4">
-                                    <h6>Seleccione un producto:</h6>
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="productoEntrada">Producto:</label>
-                                        <select class="form-select" id="productoEntrada" name="producto.idProducto" th:field="*{producto.idProducto}">
-                                            <option th:each="producto : ${productos}"
-                                                    th:value="${producto.idProducto}"
-                                                    th:text="${producto.nombre}">
-                                            </option>
-                                        </select>
-                                    </div>
+                                        <div class="col-md-6 mb-4">
+                                            <h6>Seleccione un producto:</h6>
+                                            <div class="input-group mb-3">
+                                                <label class="input-group-text" for="productoEntrada">Producto:</label>
+                                                <select class="form-select" id="productoEntrada" name="producto.idProducto" th:field="*{producto.idProducto}">
+                                                    <option th:each="producto : ${productos}"
+                                                            th:value="${producto.idProducto}"
+                                                            th:text="${producto.nombre}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-group">
+                                                <label for="cantidadEntrada">Cantidad:</label>
+                                                <input type="number" class="form-control" id="cantidadEntrada" name="cantidad" th:field="*{cantidad}" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <label for="precioEntrada">Precio:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">S/.</span>
+                                                <input type="number" id="precioEntrada" class="form-control" th:field="*{precio}" aria-label="Amount (to the nearest dollar)" placeholder="Coloca el precio:">
+                                                <span class="input-group-text">.00</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-group">
+                                                <label for="motivoEntrada">Motivo:</label>
+                                                <input type="text" class="form-control" id="motivoEntrada" name="motivo" th:field="*{motivo}" required>
+                                            </div>
+                                        </div>
+
+
+                                        <button type="submit" class="btn icon icon-left btn-primary"><i data-feather="edit"></i> Registrar </button>
+
+
+                                    </form>
                                 </div>
-
-                                <div class="col-md-6 mb-4">
-                            <div class="form-group">
-                                <label for="cantidadEntrada">Cantidad:</label>
-                                <input type="number" class="form-control" id="cantidadEntrada" name="cantidad" th:field="*{cantidad}" required>
-                            </div>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
-                                    <label for="precioEntrada">Precio:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">S/.</span>
-                                        <input type="number" id="precioEntrada" class="form-control" th:field="*{precio}" aria-label="Amount (to the nearest dollar)" placeholder="Coloca el precio:">
-                                        <span class="input-group-text">.00</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
-                                <div class="form-group">
-                                    <label for="motivoEntrada">Motivo:</label>
-                                    <input type="text" class="form-control" id="motivoEntrada" name="motivo" th:field="*{motivo}" required>
-                                </div>
-                                </div>
-
-
-                                    <button type="submit" class="btn icon icon-left btn-primary"><i data-feather="edit"></i> Registrar </button>
-
-
-                            </form>
-                            </div>
                             </div>
                         </div>
 
 
                         <div class="col-md-6">
                             <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">REGISTRAR SALIDA</h4>
-                            </div>
+                                <div class="card-header">
+                                    <h4 class="card-title">REGISTRAR SALIDA</h4>
+                                </div>
                                 <div class="card-body">
-                            <form th:action="@{/movimientos/salida}" th:object="${movimientoSalida}" method="post">
+                                    <form th:action="@{/movimientos/salida}" th:object="${movimientoSalida}" method="post">
 
-                                <div class="col-md-6 mb-4">
-                                    <h6>Seleccione un producto:</h6>
-                                <div class="input-group mb-3">
-                                    <label class="input-group-text" for="productoSalida">Producto:</label>
-                                    <select class="form-select" id="productoSalida" name="producto.idProducto" th:field="*{producto.idProducto}">
-                                        <option th:each="producto : ${productos}"
-                                                th:value="${producto.idProducto}"
-                                                th:text="${producto.nombre}">
-                                        </option>
-                                    </select>
+                                        <div class="col-md-6 mb-4">
+                                            <h6>Seleccione un producto:</h6>
+                                            <div class="input-group mb-3">
+                                                <label class="input-group-text" for="productoSalida">Producto:</label>
+                                                <select class="form-select" id="productoSalida" name="producto.idProducto" th:field="*{producto.idProducto}">
+                                                    <option th:each="producto : ${productos}"
+                                                            th:value="${producto.idProducto}"
+                                                            th:text="${producto.nombre}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-group">
+                                                <label for="cantidadSalida">Cantidad:</label>
+                                                <input type="number" class="form-control" id="cantidadSalida" name="cantidad" th:field="*{cantidad}" required>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-6 mb-4">
+                                            <label for="precioSalida">Precio:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">S/.</span>
+                                                <input type="number" id="precioSalida" class="form-control" name="precio" th:field="*{precio}" aria-label="Amount (to the nearest dollar)" placeholder="Coloca el precio:" required>
+                                                <span class="input-group-text">.00</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-group">
+                                                <label for="motivoSalida">Motivo:</label>
+                                                <input type="text" class="form-control" id="motivoSalida" name="motivo" th:field="*{motivo}" required>
+                                            </div>
+                                        </div>
+
+
+                                        <button type="submit" class="btn btn-primary"><i data-feather="edit"></i> Registrar</button>
+
+
+                                    </form>
                                 </div>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
-                                <div class="form-group">
-                                    <label for="cantidadSalida">Cantidad:</label>
-                                    <input type="number" class="form-control" id="cantidadSalida" name="cantidad" th:field="*{cantidad}" required>
-                                </div>
-                                </div>
-
-
-                                <div class="col-md-6 mb-4">
-                                    <label for="precioSalida">Precio:</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">S/.</span>
-                                    <input type="number" id="precioSalida" class="form-control" name="precio" th:field="*{precio}" aria-label="Amount (to the nearest dollar)" placeholder="Coloca el precio:" required>
-                                    <span class="input-group-text">.00</span>
-                                </div>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                    <label for="motivoSalida">Motivo:</label>
-                                    <input type="text" class="form-control" id="motivoSalida" name="motivo" th:field="*{motivo}" required>
-                                    </div>
-                                </div>
-
-
-                                    <button type="submit" class="btn btn-primary"><i data-feather="edit"></i> Registrar</button>
-
-
-                            </form>
                             </div>
-                                </div>
                         </div>
                     </div>
                 </div>
@@ -143,49 +166,49 @@
         </div>
 
         <section class="section">
-        <div class="card">
-            <div class="card-header">
-                <h4>Historial de Movimientos</h4>
+            <div class="card">
+                <div class="card-header">
+                    <h4>Historial de Movimientos</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Motivo</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="movimiento : ${movimientos}">
+                                <td th:text="${movimiento.idMovimiento}"></td>
+                                <td th:text="${movimiento.producto.nombre}"></td>
+                                <td th:text="${movimiento.tipo}"></td>
+                                <td th:text="${movimiento.cantidad}"></td>
+                                <td th:text="${movimiento.motivo}"></td>
+                                <td th:text="${movimiento.precio}"></td>
+                                <td th:text="${movimiento.total}"></td>
+                                <td th:text="${movimiento.estado}">
+                                    <span th:if="${movimiento.estado == 'ACTIVO'}" class="badge bg-warning">ACTIVO</span>
+                                    <span th:if="${movimiento.estado == 'INACTIVO'}" class="badge bg-success">INACTIVO</span>
+                                </td>
+                                <td th:text="${#dates.format(movimiento.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-    <div class="card-body">
-        <div class="table-responsive">
-    <table class="table table-hover mb-0">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Producto</th>
-            <th>Tipo</th>
-            <th>Cantidad</th>
-            <th>Motivo</th>
-            <th>Precio</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="movimiento : ${movimientos}">
-            <td th:text="${movimiento.idMovimiento}"></td>
-            <td th:text="${movimiento.producto.nombre}"></td>
-            <td th:text="${movimiento.tipo}"></td>
-            <td th:text="${movimiento.cantidad}"></td>
-            <td th:text="${movimiento.motivo}"></td>
-            <td th:text="${movimiento.precio}"></td>
-            <td th:text="${movimiento.total}"></td>
-            <td th:text="${movimiento.estado}">
-                <span th:if="${movimiento.estado == 'ACTIVO'}" class="badge bg-warning">ACTIVO</span>
-                <span th:if="${movimiento.estado == 'INACTIVO'}" class="badge bg-success">INACTIVO</span>
-            </td>
-            <td th:text="${#dates.format(movimiento.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-        </tr>
-        </tbody>
-    </table>
-        </div>
+        </section>
     </div>
-        </div>
-    </section>
-    </div>
-    </div>
+</div>
 
 </body>
 </html>

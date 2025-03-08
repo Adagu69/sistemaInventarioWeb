@@ -112,5 +112,13 @@ public class MovimientoServicio implements IMovimientoServicio {
     public List<Movimiento> buscarMovimientosPorMotivo(String motivo) {
         return List.of();
     }
+
+    @Autowired
+    private MovimientoRepositorio movimientoRepositorio;
+
+    public List<Movimiento> findByTipo(String tipo) {
+        return movimientoRepositorio.findByTipo(tipo);
+    }
+
 }
 

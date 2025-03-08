@@ -8,7 +8,7 @@
 <div id="sidebar" class='active' th:fragment="sidebar"><!--sidebar-->
     <div class="sidebar-wrapper active">
         <div  class="sidebar-header text-center m-5">
-            <img th:src="@{/images/favicon.svg}" >
+            <img th:src="@{/images/logo.png}" >
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
@@ -71,6 +71,28 @@
                         <i data-feather="layout" width="20"></i>
                         <span>Movimientos</span>
                     </a>
+                </li>
+
+                <li class="sidebar-itemhas-sub" th:if="${isAdmin}">
+                    <a th:href="@{/consultas}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Consulta</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a th:href="@{/solicitudes}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Solicitudes</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:if="${isAdmin}">
+                    <a th:href="@{/pedido}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Pedidos</span>
+                    </a>
+                </li>
 
             </ul>
         </div>

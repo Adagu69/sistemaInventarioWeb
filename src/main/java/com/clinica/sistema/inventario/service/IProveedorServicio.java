@@ -13,6 +13,8 @@ public interface IProveedorServicio {
 
     public Page<Proveedor> findAll(Pageable pageable);
 
+    List<Proveedor> findAll();
+
     public Proveedor findOne(Long idProveedor);
 
     Optional<Proveedor> findById(Long idProveedor);

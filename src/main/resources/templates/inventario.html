@@ -32,58 +32,65 @@
             <div class="card-body">
                 <div class="row">
 
-        <div class="col-md-6">
-        <!-- Botón para exportar reporte en PDF -->
-        <form action="/inventario/exportar" method="get">
-            <button type="submit" class="btn icon icon-left btn-danger"><i data-feather="file"></i>
-                Generar Reporte PDF
-            </button>
-        </form>
-        </div>
+                    <div class="col-md-6">
+                        <!-- Botón para exportar reporte en PDF -->
+                        <form action="/inventario/exportar" method="get">
+                            <button type="submit" class="btn icon icon-left btn-danger"><i data-feather="file"></i>
+                                Generar Reporte PDF
+                            </button>
+                        </form>
+                    </div>
 
-        <div class="col-md-6">
-        <!-- Formulario de búsqueda -->
-        <form action="/inventario/buscar" method="get" class="mb-3">
-            <input type="text" name="nombreProducto" placeholder="Buscar por nombre del producto" class="form-control d-inline-block" style="width: 300px;">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-        </form>
-        </div>
+                    <div class="col-md-6">
+                        <!-- Formulario para generar reporte de máximo/mínimo/promedio -->
+                        <form action="/inventario/promedio/exportar" method="get" class="d-flex mb-4">
+                            <button type="submit" class="btn btn-success">Generar Reporte de Promedio/Min/Máx</button>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Formulario de búsqueda -->
+                        <form action="/inventario/buscar" method="get" class="mb-3">
+                            <input type="text" name="nombreProducto" placeholder="Buscar por nombre del producto" class="form-control d-inline-block" style="width: 300px;">
+                            <button type="submit" class="btn btn-primary">Buscar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
         <section class="section">
             <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead>
-            <tr>
-                <th>ID Inventario</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Estado</th>
-                <th>Total</th>
-                <th>Fecha</th> <!-- Nueva columna para la fecha -->
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="inventario : ${inventarios}">
-                <td th:text="${inventario.idInventario}"></td> <!-- ID del inventario -->
-                <td th:text="${inventario.producto.nombre}"></td> <!-- Nombre del producto -->
-                <td th:text="${inventario.cantidad}"></td> <!-- Cantidad en inventario -->
-                <td th:text="${inventario.precio}"></td> <!-- Precio del producto -->
-                <td th:text="${inventario.estado}"></td> <!-- Estado del inventario -->
-                <td th:text="${inventario.cantidad * inventario.precio}"></td> <!-- Total del inventario -->
-                <td th:text="${inventario.fecha}"></td> <!-- Fecha del inventario -->
-            </tr>
-            </tbody>
-        </table>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>ID Inventario</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Fecha</th> <!-- Nueva columna para la fecha -->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="inventario : ${inventarios}">
+                                <td th:text="${inventario.idInventario}"></td> <!-- ID del inventario -->
+                                <td th:text="${inventario.producto.nombre}"></td> <!-- Nombre del producto -->
+                                <td th:text="${inventario.cantidad}"></td> <!-- Cantidad en inventario -->
+                                <td th:text="${inventario.precio}"></td> <!-- Precio del producto -->
+                                <td th:text="${inventario.estado}"></td> <!-- Estado del inventario -->
+                                <td th:text="${inventario.cantidad * inventario.precio}"></td> <!-- Total del inventario -->
+                                <td th:text="${inventario.fecha}"></td> <!-- Fecha del inventario -->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    </section>
+        </section>
     </div>
 </div>
 

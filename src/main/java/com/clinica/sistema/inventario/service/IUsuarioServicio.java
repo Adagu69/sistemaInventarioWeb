@@ -26,5 +26,7 @@ public interface IUsuarioServicio {
 
     public void delete(Long id);
 
+    Usuario findByEmail(String emailUsuario);
+
 //    public Usuario findByUsername(String username);
 }

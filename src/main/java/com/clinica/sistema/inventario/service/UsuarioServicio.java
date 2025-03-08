@@ -81,7 +81,6 @@ public class UsuarioServicio implements IUsuarioServicio, UserDetailsService {
 
     @Override
     public List<Usuario> listarUsuarios() {
-
         return usuarioRepositorio.findAll();
     }
 
@@ -108,6 +107,11 @@ public class UsuarioServicio implements IUsuarioServicio, UserDetailsService {
     @Override
     public void delete(Long id) {
         usuarioRepositorio.deleteById(id);
+    }
+
+    @Override
+    public Usuario findByEmail(String emailUsuario) {
+        return usuarioRepositorio.findByEmail(emailUsuario);
     }
 
 
@@ -139,20 +143,6 @@ public class UsuarioServicio implements IUsuarioServicio, UserDetailsService {
     public Page<Usuario> buscarUsuariosPorNombre(String nombre, Pageable pageable) {
         return usuarioRepositorio.findByNombreContaining(nombre, pageable); // Buscar por nombre
     }
-
-//    Método para actualizar un usuario existente
-//    public Usuario actualizarUsuario(Long id, Usuario detallesUsuario) {
-//        Usuario usuario = usuarioRepositorio.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-//
-//        // Actualizar los campos según los detalles proporcionados
-//        usuario.setNombre(detallesUsuario.getNombre());
-//        usuario.setApellido(detallesUsuario.getApellido());
-//        usuario.setEmail(detallesUsuario.getEmail());
-//        // Puedes actualizar otros campos adicionales aquí
-//
-//        return usuarioRepositorio.save(usuario);
-//    }
 
 }
 

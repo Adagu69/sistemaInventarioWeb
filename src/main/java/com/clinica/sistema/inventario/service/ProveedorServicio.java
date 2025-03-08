@@ -27,6 +27,11 @@ public class ProveedorServicio implements IProveedorServicio {
     }
 
     @Override
+    public List<Proveedor> findAll() {
+        return proveedorRepositorio.findAll();
+    }
+
+    @Override
     public Proveedor findOne(Long idProveedor) {
         return proveedorRepositorio.findById(idProveedor).orElse(null);
     }

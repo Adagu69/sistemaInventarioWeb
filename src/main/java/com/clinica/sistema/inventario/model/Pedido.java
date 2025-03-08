@@ -2,8 +2,10 @@ package com.clinica.sistema.inventario.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -29,7 +31,14 @@ public class Pedido {
     private Proveedor proveedor;
 
     @Column(name = "fecha")
-    private Timestamp fecha;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime fecha;
+
+    @Column(name = "cantidad")
+    private int cantidad;
+
+    @Column(name = "motivo")
+    private String motivo;
 
     @OneToMany(mappedBy = "pedido")
     private Set<DetallePedido> detalles;

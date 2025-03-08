@@ -10,6 +10,9 @@ import com.clinica.sistema.inventario.service.InventarioServicio;
 import com.clinica.sistema.inventario.service.MovimientoServicio;
 import com.clinica.sistema.inventario.service.ProductoServicio;
 import com.clinica.sistema.inventario.service.UsuarioServicio;
+import com.clinica.sistema.inventario.util.reportes.MovimientoExporterPDF;
+import com.clinica.sistema.inventario.util.reportes.MovimientoUtilidadExporterPDF;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,12 @@ public class MovimientoControlador {
     @Autowired
     private UsuarioServicio usuarioServicio;
 
+    @Autowired
+    private MovimientoExporterPDF movimientoExporterPDF;
+
+    @Autowired
+    private MovimientoUtilidadExporterPDF movimientoUtilidadExporterPDF;
+
     @GetMapping
     public String mostrarRegistroMovimientos(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
         try{
@@ -59,12 +68,12 @@ public class MovimientoControlador {
             }
             model.addAttribute("isAdmin", isAdmin);
 
-        model.addAttribute("productos", productoService.findAll());
-        model.addAttribute("movimientoEntrada", new Movimiento());
-        model.addAttribute("movimientoSalida", new Movimiento());
-        model.addAttribute("movimientos", movimientoServicio.findAll());
-        return "MovimientoListar";
-    } catch (Exception e) {
+            model.addAttribute("productos", productoService.findAll());
+            model.addAttribute("movimientoEntrada", new Movimiento());
+            model.addAttribute("movimientoSalida", new Movimiento());
+            model.addAttribute("movimientos", movimientoServicio.findAll());
+            return "MovimientoListar";
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,6 +154,43 @@ public class MovimientoControlador {
             redirectAttributes.addFlashAttribute("tipoMensaje", "error");
         }
         return "redirect:/movimientos";
+    }
+
+    @GetMapping("/reporte")
+    public void generarReporte(HttpServletResponse response) {
+        try {
+            // Configurar la respuesta para que sea un archivo PDF
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_movimientos.pdf\"");
+
+            // Obtener los movimientos de entrada y salida
+            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
+            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
+
+            // Llamar al servicio para exportar a PDF
+            movimientoExporterPDF.exportar(entradas, salidas, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método adicional para generar un reporte de ingreso/utilidad
+    @GetMapping("/reporteUtilidad")
+    public void generarReporteUtilidad(HttpServletResponse response) {
+        try {
+            // Configurar la respuesta para que sea un archivo PDF
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_utilidad.pdf\"");
+
+            // Obtener todos los movimientos de entrada y salida
+            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
+            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
+
+            // Llamar al método de exportación de la clase MovimientoUtilidadExporterPDF
+            movimientoUtilidadExporterPDF.exportar(entradas, salidas, response);
+        } catch (Exception e) {
+            e.printStackTrace();  // Mejorar manejo de errores en producción
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -38,6 +39,8 @@ public class Usuario {
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
+
+
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -96,5 +99,9 @@ public class Usuario {
             this.usuarioFecha = new UsuarioFecha();
         }
         this.usuarioFecha.setFecha(fecha);
+    }
+
+    public boolean hasRole(String role) {
+        return roles != null && roles.contains(role);
     }
 }

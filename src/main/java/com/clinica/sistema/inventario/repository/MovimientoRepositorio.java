@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface MovimientoRepositorio extends JpaRepository<Movimiento, Long> {
 
+    List<Movimiento> findByTipo(String tipo);
+
 }

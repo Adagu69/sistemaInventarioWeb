@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos</title>
+</head>
+<body>
+<div class="main-content container-fluid" layout:fragment="content">
+  <div class="main-content container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-12 col-md-6 order-md-1 order-last">
+          <h3>GESTION DE PEDIDOS</h3>
+          <p class="text-subtitle text-muted"></p>
+        </div>
+        <div class="col-12 col-md-6 order-md-2 order-first">
+          <nav aria-label="breadcrumb" class="breadcrumb-header">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Lista de pedidos</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mt-5">
+      <!-- Formulario para Registrar Pedidos -->
+      <form th:action="@{/pedido/guardar}" method="post" th:object="${pedido}" class="form-solicitud">
+        <div class="form-group">
+          <label for="proveedor">Proveedor:</label>
+          <select id="proveedor" name="proveedor.idProveedor" th:field="*{proveedor}" class="form-control" required>
+            <option value="">Seleccionar Proveedor</option>
+            <option th:each="proveedor : ${proveedores}"
+                    th:value="${proveedor.idProveedor}"
+                    th:text="${proveedor.nombre}">
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cantidad">Cantidad:</label>
+          <input type="number" id="cantidad" th:field="*{cantidad}" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="fecha">Fecha:</label>
+          <input type="datetime-local" id="fecha" th:field="*{fecha}" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="fecha">Motivo:</label>
+            <input type="text" id="motivo" th:field="*{motivo}" class="form-control" required>
+        </div>
+
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-primary">Guardar Pedido</button>
+        </div>
+      </form>
+
+      <section class="section">
+        <div class="card">
+          <div class="card-body px-0 pb-0">
+            <div class="table-responsive">
+              <table class='table mb-0'>
+                <thead>
+                <tr>
+                  <th>Proveedor</th>
+                  <th>Cantidad</th>
+                  <th>Usuario</th>
+                  <th>Fecha</th>
+                  <th>Motivo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pedido : ${pedidos}">
+                  <td th:text="${pedido.proveedor?.nombre}">Nombre del Proveedor</td>
+                  <td th:text="${pedido.cantidad}">Cantidad</td>
+                  <td th:text="${pedido.usuario?.nombre}">Usuario</td>
+                  <td th:text="${pedido.fecha}">Fecha</td>
+                  <td th:text="${pedido.motivo}">Motivo</td>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

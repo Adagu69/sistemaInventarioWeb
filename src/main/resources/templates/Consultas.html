@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultas</title>
+</head>
+<body>
+<div class="main-content container-fluid" layout:fragment="content">
+    <h1>Selecciona una opción</h1>
+    <form>
+        <label for="opciones">Opciones:</label>
+        <select id="opciones" name="opciones" class="form-select">
+            <option th:each="opcion : ${opciones}" th:value="${opcion}" th:text="${opcion}"></option>
+        </select>
+        <button type="button" class="btn btn-primary mt-3" onclick="agregar()">Agregar</button>
+        <button type="button" class="btn btn-primary mt-3" onclick="listar()">Listar</button>
+    </form>
+
+    <!-- Aquí se mostrará la tabla con los resultados -->
+    <div id="tablaResultados"></div>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    // Función para agregar los datos según la opción seleccionada (Proveedores o Productos)
+    function agregar() {
+        var opcionSeleccionada = document.getElementById("opciones").value;
+
+        fetch("/consultas/agregar?opcion=" + opcionSeleccionada)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tabla = "<table class='table'><thead><tr>";
+
+                // Crear encabezados de la tabla según la opción seleccionada
+                if (opcionSeleccionada === "Proveedores") {
+                    tabla += "<th>ID Proveedor</th><th>Correo</th><th>Dirección</th><th>Nombre</th>";
+                } else if (opcionSeleccionada === "Productos") {
+                    tabla += "<th>ID Producto</th><th>Descripción</th><th>Nombre</th><th>Categoría ID</th><th>Proveedor ID</th>";
+                }
+
+                tabla += "</tr></thead><tbody>";
+
+                // Agregar filas con los datos obtenidos
+                data.forEach(row => {
+                    tabla += "<tr>";
+                    if (opcionSeleccionada === "Proveedores") {
+                        tabla += "<td>" + row.id_proveedor + "</td>";
+                        tabla += "<td>" + row.correo + "</td>";
+                        tabla += "<td>" + row.direccion + "</td>";
+                        tabla += "<td>" + row.nombre + "</td>";
+                    } else if (opcionSeleccionada === "Productos") {
+                        tabla += "<td>" + row.id_producto + "</td>";
+                        tabla += "<td>" + row.descripcion + "</td>";
+                        tabla += "<td>" + row.nombre + "</td>";
+                        tabla += "<td>" + row.categoria_id + "</td>";
+                        tabla += "<td>" + row.proveedor_id + "</td>";
+                    }
+                    tabla += "</tr>";
+                });
+
+                tabla += "</tbody></table>";
+                document.getElementById("tablaResultados").innerHTML = tabla;
+            })
+            .catch(error => {
+                console.error('Error al cargar los datos:', error);
+                alert('Hubo un error al cargar los datos');
+            });
+    }
+
+    // Función para listar los datos, como ya estaba antes (sin cambios)
+    function listar() {
+        fetch("/consultas/listar")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tabla = "<table class='table'><thead><tr><th>ID_Producto</th><th>Descripción</th><th>Producto_Nombre</th><th>Categoria ID</th><th>Proveedor ID</th><th>Correo</th><th>Dirección</th><th>Proveedor_Nombre</th></tr></thead><tbody>";
+                data.forEach(row => {
+                    tabla += "<tr>";
+                    tabla += "<td>" + row.id_producto + "</td>";
+                    tabla += "<td>" + row.descripcion + "</td>";
+                    tabla += "<td>" + row.producto_nombre + "</td>";
+                    tabla += "<td>" + row.categoria_id + "</td>";
+                    tabla += "<td>" + row.proveedor_id + "</td>"
+                    tabla += "<td>" + row.correo + "</td>"
+                    tabla += "<td>" + row.direccion + "</td>"
+                    tabla += "<td>" + row.proveedor_nombre + "</td>";
+                    tabla += "</tr>";
+                });
+                tabla += "</tbody></table>";
+                document.getElementById("tablaResultados").innerHTML = tabla;
+            })
+            .catch(error => {
+                console.error('Error al cargar los datos:', error);
+                alert('Hubo un error al cargar los datos');
+            });
+    }
+</script>
+

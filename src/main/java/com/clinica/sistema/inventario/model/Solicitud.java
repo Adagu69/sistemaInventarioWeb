@@ -3,8 +3,10 @@ package com.clinica.sistema.inventario.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +23,8 @@ public class Solicitud {
     private Long idSolicitud;
 
     @Column(name = "fecha")
-    private Timestamp fecha;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime fecha;
 
     @Column(name = "cantidad")
     private int cantidad;
