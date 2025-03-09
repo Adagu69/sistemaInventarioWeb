@@ -24,9 +24,16 @@ public class RegistroControlador {
         return "auth-login";
     }
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/login"; // Redirige a la página de login
+    }
+
     @RequestMapping("/home")
     public String loginSubmit(){
         return "/pages/landing_page";
     }
+
+
 
 }
