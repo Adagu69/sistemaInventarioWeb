@@ -54,4 +54,8 @@ public class ProductoServicio implements IProductoServicio {
         return productoRepositorio.findById(idProducto);
     }
 
+    public Page<Producto> buscarUsuariosPorNombre(String nombreProducto, Pageable pageable) {
+        return productoRepositorio.findByNombreContainingIgnoreCase(nombreProducto, pageable);
+    }
+
 }

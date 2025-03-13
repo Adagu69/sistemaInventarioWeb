@@ -24,5 +24,4 @@ public interface IProductoServicio {
 
     Optional<Producto> findById(Long idProducto);
 
-
 }

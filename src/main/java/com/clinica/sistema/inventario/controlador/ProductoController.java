@@ -42,19 +42,26 @@ public class ProductoController {
     private ProductoRepositorio productoRepositorio;
 
     @GetMapping("/producto")
-    public String listarProductos(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+    public String listarProductos(@RequestParam(name = "page", defaultValue = "0") int page,
+                                  @RequestParam(name ="buscarProducto", required = false) String buscar ,
+                                  Model model) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            boolean isAdmin = false;
-            if(authentication != null && authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                isAdmin = true;
-            }
+            boolean isAdmin = authentication != null &&
+                    authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
             model.addAttribute("isAdmin", isAdmin);
 
             // Configuración de paginación
-            Pageable pageRequest = PageRequest.of(page, 5);
+            Pageable pageRequest = PageRequest.of(page, 10);
             Page<Producto> productosPage = productoServicio.findAll(pageRequest);
+
+            if (buscar != null && !buscar.trim().isEmpty()) {
+                productosPage = productoServicio.buscarUsuariosPorNombre(buscar, pageRequest);
+            }else {
+                productosPage = productoServicio.findAll(pageRequest);
+            }
 
             // Para el formulario de nuevo producto
             model.addAttribute("producto", new Producto());
@@ -69,6 +76,7 @@ public class ProductoController {
             model.addAttribute("categorias", categoriaServicio.listarCategorias());
             model.addAttribute("proveedores", proveedorServicio.listarProveedores());
             model.addAttribute("page", new PageRender<>("/producto", productosPage));
+            model.addAttribute("buscarProducto", buscar); // Mantener el valor del campo de búsqueda
             return "ProductoListar";
 
         } catch (Exception e) {
@@ -140,12 +148,12 @@ public class ProductoController {
     }
 
     // Buscar productos por nombre
-    @GetMapping("/producto/buscar")
-    public String buscarProductos(@RequestParam("nombreProducto") String nombreProducto, Model model) {
-        List<Producto> productos = productoRepositorio.findByNombreContainingIgnoreCase(nombreProducto);
-        model.addAttribute("productos", productos); // Pasar los productos filtrados a la vista
-        return "producto"; // Redirigir a la vista producto.html
-    }
+    //@GetMapping("/producto/buscar")
+//    public String buscarProductos(@RequestParam("nombreProducto") String nombreProducto, Model model) {
+//        List<Producto> productos = productoRepositorio.findByNombreContainingIgnoreCase(nombreProducto);
+//        model.addAttribute("productos", productos); // Pasar los productos filtrados a la vista
+//        return "producto"; // Redirigir a la vista producto.html
+//    }
 
     // Generar el reporte PDF para productos
     @GetMapping("/productos/exportar")

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios</title>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
         /* Estilos para el estado del usuario */
         .table .estado-activo  {
@@ -37,21 +37,58 @@
     <section class="section">
         <div class="row mb-4">
             <div class="card">
-
                 <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <!-- Inicio Botón de Nuevo Usuario en la esquina izquierda -->
+                    <div>
+                        <button th:if="${isAdmin}"
+                                class="btn btn-info active"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalRegistro">
+                            <i class="bi bi-plus-lg"></i>Agregar Usuario
+                        </button>
+                    </div>
+                    <!-- Fin Botón de Nuevo Usuario en la esquina izquierda -->
+
                     <div class="d-flex ">
 
                         <!-- Formulario para generar reporte por fecha -->
-                        <form action="/usuarios/exportarPorFecha" method="get" class="d-flex mb-4">
-                            <button type="submit" class="btn btn-primary">Generar Reporte por Fecha</button>
+                        <div class="input-group mb-3 me-2">
+                        <form action="/usuarios/exportarPorFecha" method="get" class="d-flex mb-3">
+                            <button type="submit" class="btn btn-danger">  <i class="bi bi-file-earmark-pdf"></i>
+                                Fechas</button>
                         </form>
+                        </div>
 
                         <!-- Botón para generar el reporte de usuarios inactivos -->
-                        <form method="get" action="/usuarios/exportarInactivos" style="display: inline;">
-                            <button type="submit" class="btn btn-primary">Generar reporte de usuarios inactivos</button>
+                        <div class="input-group mb-3">
+                        <form method="get" action="/usuarios/exportarInactivos" class="d-flex mb-3">
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i>
+                                Usuarios Inactivos</button>
                         </form>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Modal para nuevo usuario -->
+                <!-- Formulario de búsqueda -->
+                <div class="d-flex justify-content-end mt-2">
+                <form action="#" method="get" class="form-inline">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control mr-sm-2"
+                               type="text"
+                               name="buscar"
+                               placeholder="Buscar"
+                               aria-label="Search"
+                               style="width: 400px;"
+                               th:value="${buscar}"
+                               th:oninput="this.form.submit()">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                    </div>
+                </form>
+                </div>
+                <!-- Fin del Formulario de búsqueda -->
+
+                        <!-- Inicio Modal para nuevo usuario -->
                         <div class="modal fade text-left"
                              id="modalRegistro"
                              tabindex="-1"
@@ -127,8 +164,6 @@
                                                 </div>
                                             </div>
 
-
-
                                             <script>
                                                 document.getElementById('password').addEventListener('input', function() {
                                                     const password = this.value;
@@ -201,31 +236,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div>
-                    <button th:if="${isAdmin}"
-                            class="btn btn-primary active"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalRegistro">
-                        Nuevo Usuario
-                    </button>
-                </div>
-                <br>
-                <!-- Formulario de búsqueda -->
-                <form action="#" method="get">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="buscar" placeholder="Buscar" />
-                        <button class="btn btn-primary" type="submit">Buscar</button>
-                    </div>
-                </form>
+                <!-- Fin Modal para nuevo usuario -->
 
 
+                <!-- Inicio de la Tabla de datos-->
                 <div class="card-body px-0 pb-0">
                     <div class="table-responsive">
-
-                        <table class='table mb-0'>
+                        <table class='table table-striped table-hover'>
                             <thead>
                             <tr>
                                 <th class="d-none">#</th>
@@ -234,7 +251,7 @@
                                 <th class="text-center">Email</th>
                                 <th class="text-center">Rol</th>
                                 <th class="text-center">Estado</th>
-                                <th class="text-center">Fecha</th> <!-- Nueva columna para la fecha -->
+                                <th class="text-center">Fecha</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                             </thead>
@@ -252,10 +269,11 @@
                                 </td>
                                 <td>
                                     <!-- Aquí cambiamos la lógica para comparar con el valor de la enumeración -->
-                                    <span th:style="${usuario.estado == T(com.clinica.sistema.inventario.model.Estado).ACTIVO ? 'background-color: green; color: white; padding: 5px; border-radius: 3px; font-weight: bold;' : 'background-color: red; color: white; padding: 5px; border-radius: 3px; font-weight: bold;'}"
+                                    <span th:style="${usuario.estado == T(com.clinica.sistema.inventario.model.Estado).ACTIVO ?
+                                     'background-color: green; color: white; padding: 5px; border-radius: 3px; font-weight: bold;' : 'background-color: red; color: white; padding: 5px; border-radius: 3px; font-weight: bold;'}"
                                           th:text="${usuario.estado }"></span>
                                 </td>
-                                <td class="text-center" th:text="${usuario.usuarioFecha.fecha}"></td><!-- Mostrar la fecha -->
+                                <td class="text-center" th:text="${usuario.usuarioFecha.fecha}"></td>
 
                                 <td>
                                     <div class="d-flex gap-1 justify-content-center">
@@ -278,7 +296,6 @@
                                                 th:data-bs-target="'#reactivateModal' + ${usuario.idUsuario}">
                                             Reactivar
                                         </button>
-
                                     </div>
                                 </td>
 
@@ -403,7 +420,9 @@
 
                             </tbody>
                         </table>
+                        <div class="d-flex justify-content-center">
                         <nav th:replace="pages/paginator-nav :: paginator"></nav>
+                        </div>
                     </div>
                 </div>
             </div>

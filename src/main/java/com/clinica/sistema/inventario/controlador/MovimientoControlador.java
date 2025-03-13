@@ -103,7 +103,7 @@ public class MovimientoControlador {
                 inventario.setProducto(movimiento.getProducto());
             }
             inventario.setCantidad(inventario.getCantidad() + movimiento.getCantidad());
-            inventario.setPrecio(movimiento.getPrecio());
+            inventario.setPrecio(movimiento.getPrecio()); // Guardar el precio de entrada como precio general
             inventario.setEstado("ACTIVO");
             inventario.setFecha(String.valueOf(movimiento.getFecha()));
             inventarioServicio.save(inventario);
@@ -132,20 +132,22 @@ public class MovimientoControlador {
             movimiento.setTipo("SALIDA");
             movimiento.setFecha(new Timestamp(System.currentTimeMillis()));
             movimiento.setEstado("ACTIVO");
+
+            // Obtener el precio general del inventario
+            Inventario inventario = inventarioServicio.findByProductoIdProducto(movimiento.getProducto().getIdProducto());
+            if (inventario == null) {
+                throw new RuntimeException("No hay inventario para este producto");
+            }
+
+            // Usar el precio general del inventario
+            movimiento.setPrecio(inventario.getPrecio());
             movimiento.setTotal(movimiento.getCantidad() * movimiento.getPrecio());
 
             movimientoServicio.save(movimiento);
 
-
             // Actualizar inventario
-            Inventario inventario = inventarioServicio.findByProductoIdProducto(movimiento.getProducto().getIdProducto());
-            if (inventario != null) {
-                inventario.setCantidad(inventario.getCantidad() - movimiento.getCantidad());
-                inventario.setPrecio(movimiento.getPrecio());
-                inventario.setEstado("ACTIVO");
-                inventario.setFecha(String.valueOf(movimiento.getFecha()));
-                inventarioServicio.save(inventario);
-            }
+            inventario.setCantidad(inventario.getCantidad() - movimiento.getCantidad());
+            inventarioServicio.save(inventario);
 
             redirectAttributes.addFlashAttribute("mensaje", "Salida registrada correctamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
