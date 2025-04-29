@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="sidebar" class='active' th:fragment="sidebar"><!--sidebar-->
+    <div class="sidebar-wrapper active">
+        <div  class="sidebar-header text-center m-5">
+            <img th:src="@{/images/logo.png}" >
+        </div>
+        <div class="sidebar-menu">
+            <ul class="menu">
+
+
+                <li class='sidebar-title'>Menu Administrador</li>
+
+
+
+                <li class="sidebar-item active ">
+                    <a th:href="@{/home}" class='sidebar-link'>
+                        <i data-feather="home" width="20"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item active-table-tab" th:if="${isAdmin}">
+                    <a th:href="@{/usuarios}" class='sidebar-link'>
+                        <i data-feather="user" width="20"></i>
+                        <span> Gestion de Usuarios</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item  has-sub" th:if="${isAdmin}">
+                    <a href="#" class='sidebar-link'>
+                        <i data-feather="briefcase" width="20"></i>
+                        <span>Gestion de Productos</span>
+                    </a>
+
+                    <ul class="submenu ">
+                        <li>
+                            <a th:href="@{/categoria}" href="component-extra-avatar.html"> Categorias </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/proveedor}" href="component-extra-divider.html"> Proveedor </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/area}" href="component-extra-divider.html"> Areas </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/producto}" href="component-extra-divider.html"> Productos </a>
+                        </li>
+                    </ul>
+
+                </li>
+
+
+                <li class='sidebar-title'>MENU USUARIO</li>
+
+                <li class="sidebar-item">
+                    <a th:href="@{/inventario}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Inventario</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a th:href="@{/movimientos}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Movimientos</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-itemhas-sub" th:if="${isAdmin}">
+                    <a th:href="@{/consultas}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Consulta</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a th:href="@{/solicitudes}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Solicitudes</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:if="${isAdmin}">
+                    <a th:href="@{/pedido}" class='sidebar-link'>
+                        <i data-feather="layout" width="20"></i>
+                        <span>Pedidos</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

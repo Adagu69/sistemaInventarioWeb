@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes</title>
+</head>
+<style>
+    /* Estilos Generales */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Estilo del Formulario */
+    .form-solicitud {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        border: 1px solid #e4e4e4;
+    }
+
+    /* Estilo de los Grupos de Formulario */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    /* Etiquetas */
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333333;
+    }
+
+    /* Inputs y Select */
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        background-color: #ffffff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Botón */
+    .btn {
+        padding: 10px 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Centrando Texto */
+    .text-center {
+        text-align: center;
+    }
+</style>
+<body>
+<div class="main-content container-fluid" layout:fragment="content">
+    <div class="main-content container-fluid">
+        <div class="page-title">
+            <div class="row">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>GESTION DE SOLICITUDES</h3>
+                    <p class="text-subtitle text-muted"></p>
+                </div>
+                <div class="col-12 col-md-6 order-md-2 order-first">
+                    <nav aria-label="breadcrumb" class="breadcrumb-header">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Lista de solicitudes</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <!-- Formulario para Registrar Solicitudes -->
+            <form th:action="@{/solicitudes/guardar}" method="post" th:object="${solicitud}" class="form-solicitud">
+                <div class="form-group">
+                    <label for="producto">Producto:</label>
+                    <select id="producto" name="producto.idProducto" th:field="*{producto}" class="form-control" required>
+                        <option value="">Seleccionar Producto</option>
+                        <option th:each="producto : ${productos}"
+                                th:value="${producto.idProducto}"
+                                th:text="${producto.nombre}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" id="cantidad" th:field="*{cantidad}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="datetime-local" id="fecha" th:field="*{fecha}" class="form-control" required>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Guardar Solicitud</button>
+                </div>
+            </form>
+
+            <section class="section">
+                <div class="card">
+                    <div class="card-body px-0 pb-0">
+                        <div class="table-responsive">
+                            <table class='table mb-0'>
+                                <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="solicitud : ${solicitudes}">
+                                    <td th:text="${solicitud.producto?.nombre}">Nombre del Producto</td>
+                                    <td th:text="${solicitud.cantidad}">Cantidad</td>
+                                    <td th:text="${solicitud.usuario?.nombre}">Nombre de Usuario</td>
+                                    <td th:text="${#temporals.format(solicitud.fecha, 'yyyy-MM-dd HH:mm:ss')}">Fecha</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+</html>

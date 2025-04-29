@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        /* Estilos para el estado del usuario */
+        .table .estado-activo  {
+            color: white;
+            background-color: green;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .table .estado-inactivo {
+            color: white;
+            background-color: red;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+<div class="main-content container-fluid" layout:fragment="content">
+
+    <div class="page-title">
+        <h3>Lista de Usuarios</h3>
+        <p class="text-subtitle text-muted"></p>
+    </div>
+
+    <section class="section">
+        <div class="row mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <!-- Inicio Botón de Nuevo Usuario en la esquina izquierda -->
+                    <div>
+                        <button th:if="${isAdmin}"
+                                class="btn btn-info active"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalRegistro">
+                            <i class="bi bi-plus-lg"></i>Agregar Usuario
+                        </button>
+                    </div>
+                    <!-- Fin Botón de Nuevo Usuario en la esquina izquierda -->
+
+                    <div class="d-flex ">
+
+                        <!-- Formulario para generar reporte por fecha -->
+                        <div class="input-group mb-3 me-2">
+                        <form action="/usuarios/exportarPorFecha" method="get" class="d-flex mb-3">
+                            <button type="submit" class="btn btn-danger">  <i class="bi bi-file-earmark-pdf"></i>
+                                Fechas</button>
+                        </form>
+                        </div>
+
+                        <!-- Botón para generar el reporte de usuarios inactivos -->
+                        <div class="input-group mb-3">
+                        <form method="get" action="/usuarios/exportarInactivos" class="d-flex mb-3">
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i>
+                                Usuarios Inactivos</button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de búsqueda -->
+                <div class="d-flex justify-content-end mt-2">
+                <form action="#" method="get" class="form-inline">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control mr-sm-2"
+                               type="text"
+                               name="buscar"
+                               placeholder="Buscar"
+                               aria-label="Search"
+                               style="width: 400px;"
+                               th:value="${buscar}"
+                               th:oninput="this.form.submit()">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                    </div>
+                </form>
+                </div>
+                <!-- Fin del Formulario de búsqueda -->
+
+                        <!-- Inicio Modal para nuevo usuario -->
+                        <div class="modal fade text-left"
+                             id="modalRegistro"
+                             tabindex="-1"
+                             role="dialog"
+                             aria-labelledby="registroModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                 role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="registroModalLabel">
+                                            Nuevo Usuario
+                                        </h4>
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                        </button>
+                                    </div>
+
+                                    <!-- Formulario para agregar categoría -->
+                                    <form th:action="@{/usuarios/guardar}" method="POST">
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="nombre">Nombre del usuario:</label>
+                                                <input type="text"
+                                                       id="nombre"
+                                                       name="nombre"
+                                                       class="form-control"
+                                                       placeholder="Ingrese el nombre del usuario"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nombre">Apellido del usuario:</label>
+                                                <input type="text"
+                                                       id="apellido"
+                                                       name="apellido"
+                                                       class="form-control"
+                                                       placeholder="Ingrese el Apellido del usuario"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nombre">Email del usuario:</label>
+                                                <input type="email"
+                                                       id="email"
+                                                       name="email"
+                                                       class="form-control"
+                                                       placeholder="Ingrese el Email del usuario"
+                                                       required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="password">Contraseña:</label>
+                                                <div class="input-group">
+                                                    <input type="password"
+                                                           id="password"
+                                                           name="password"
+                                                           class="form-control"
+                                                           placeholder="Ingrese la contraseña"
+                                                           required
+                                                           minlength="8"
+                                                           title="Debe tener al menos 8 caracteres, incluir una letra mayúscula, una minúscula, un número y un símbolo.">
+                                                    <div class="input-group-append">
+                                                    </div>
+                                                </div>
+                                                <small id="passwordHelp" class="form-text text-muted">Debe tener al menos 8 caracteres, incluir una letra mayúscula, una minúscula, un número y un símbolo.</small>
+                                                <div id="passwordRequirements" class="text-danger">
+                                                    <p id="lengthError" style="display: none;">La contraseña debe tener al menos 8 caracteres.</p>
+                                                    <p id="uppercaseError" style="display: none;">La contraseña debe incluir al menos una letra mayúscula.</p>
+                                                    <p id="lowercaseError" style="display: none;">La contraseña debe incluir al menos una letra minúscula.</p>
+                                                    <p id="numberError" style="display: none;">La contraseña debe incluir al menos un número.</p>
+                                                    <p id="symbolError" style="display: none;">La contraseña debe incluir al menos un símbolo.</p>
+                                                </div>
+                                            </div>
+
+                                            <script>
+                                                document.getElementById('password').addEventListener('input', function() {
+                                                    const password = this.value;
+                                                    const lengthError = document.getElementById('lengthError');
+                                                    const uppercaseError = document.getElementById('uppercaseError');
+                                                    const lowercaseError = document.getElementById('lowercaseError');
+                                                    const numberError = document.getElementById('numberError');
+                                                    const symbolError = document.getElementById('symbolError');
+                                                    const submitButton = document.getElementById('submitButton');
+
+                                                    // Validar la longitud
+                                                    lengthError.style.display = password.length < 8 ? 'block' : 'none';
+
+                                                    // Validar mayúsculas
+                                                    uppercaseError.style.display = !/[A-Z]/.test(password) ? 'block' : 'none';
+
+                                                    // Validar minúsculas
+                                                    lowercaseError.style.display = !/[a-z]/.test(password) ? 'block' : 'none';
+
+                                                    // Validar números
+                                                    numberError.style.display = !/[0-9]/.test(password) ? 'block' : 'none';
+
+                                                    // Validar símbolos
+                                                    symbolError.style.display = !/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'block' : 'none';
+
+                                                    // Verificar si todos los mensajes de error están ocultos (la contraseña es válida)
+                                                    if (password.length >= 8 &&
+                                                        /[A-Z]/.test(password) &&
+                                                        /[a-z]/.test(password) &&
+                                                        /[0-9]/.test(password) &&
+                                                        /[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                                                        submitButton.disabled = false; // Habilitar el botón de enviar
+                                                    } else {
+                                                        submitButton.disabled = true; // Deshabilitar el botón de enviar
+                                                    }
+                                                });
+                                            </script>
+
+                                            <div class="form-group">
+                                                <label for="areaId">Área:</label>
+                                                <select class="form-control" id="areaId" name="areaId" required>
+                                                    <option value="">Seleccione un área</option>
+                                                    <option th:each="area : ${areas}"
+                                                            th:value="${area.idArea}"
+                                                            th:text="${area.nombre}">
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <!--div para seleccionar entre usuario y administrador-->
+                                            <div class="form-group">
+                                                <label for="role">Rol del usuario:</label>
+                                                <select class="form-control" id="role" name="role">
+                                                    <option value="USER">Usuario</option>
+                                                    <option value="ADMIN">Administrador</option>
+                                                </select>
+                                            </div>
+
+
+                                            <!-- Campo de Fecha -->
+                                            <div>
+                                                <label for="fecha">Fecha:</label>
+                                                <input type="date" id="fecha" name="fecha" required>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button"
+                                                    class="btn btn-light-secondary"
+                                                    data-bs-dismiss="modal">
+                                                <span class="d-none d-sm-block">Cancelar</span>
+                                            </button>
+                                            <button type="submit"
+                                                    class="btn btn-primary ml-1">
+                                                <span class="d-none d-sm-block">Guardar</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                <!-- Fin Modal para nuevo usuario -->
+
+
+                <!-- Inicio de la Tabla de datos-->
+                <div class="card-body px-0 pb-0">
+                    <div class="table-responsive">
+                        <table class='table table-striped table-hover'>
+                            <thead>
+                            <tr>
+                                <th class="d-none">#</th>
+                                <th class="text-center">Nombre</th>
+                                <th class="text-center">Apellido</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Rol</th>
+                                <th class="text-center">Area</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr th:each="usuario : ${usuarios}">
+                                <td class="d-none" th:text="${usuario.idUsuario}"></td>
+                                <td class="text-center" th:text="${usuario.nombre}"></td>
+                                <td class="text-center" th:text="${usuario.apellido}"></td>
+                                <td class="text-center" th:text="${usuario.email}"></td>
+                                <td class="text-center">
+                                    <span th:each="rol : ${usuario.roles}"
+                                          th:text="${rol.nombre}"
+                                          class="badge bg-primary me-1"></span>
+                                </td>
+                                <td class="text-center" th:text="${usuario.area?.nombre}">-</td>
+                                <td>
+                                    <!-- Aquí cambiamos la lógica para comparar con el valor de la enumeración -->
+                                    <span th:style="${usuario.estado == T(com.clinica.sistema.inventario.model.Estado).ACTIVO ?
+                                     'background-color: green; color: white; padding: 5px; border-radius: 3px; font-weight: bold;' : 'background-color: red; color: white; padding: 5px; border-radius: 3px; font-weight: bold;'}"
+                                          th:text="${usuario.estado }"></span>
+                                </td>
+                                <td class="text-center" th:text="${usuario.usuarioFecha.fecha}"></td>
+
+                                <td>
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <!-- Botón Editar -->
+                                        <button th:if="${isAdmin}"
+                                                class="btn btn-warning active"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#editUsuarioModal' + ${usuario.idUsuario}">
+                                            Editar
+                                        </button>
+
+                                        <!-- Botón para abrir el modal -->
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                                th:data-bs-target="${'#deleteModal' + usuario.idUsuario}">
+                                            Desactivar
+                                        </button>
+
+                                        <!-- Botón para abrir el modal de reactivar -->
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                th:data-bs-target="'#reactivateModal' + ${usuario.idUsuario}">
+                                            Reactivar
+                                        </button>
+                                    </div>
+                                </td>
+
+                                <!-- Modal de edición para cada usuario -->
+                                <div class="modal fade" th:id="'editUsuarioModal' + ${usuario.idUsuario}"
+                                     tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Editar Usuario</h5>
+                                                <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                </button>
+                                            </div>
+                                            <!-- Formulario de edición -->
+                                            <form th:action="@{/usuarios/actualizar}" method="POST">
+                                                <div class="modal-body">
+                                                    <!-- Campo oculto para el ID -->
+                                                    <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+
+                                                    <div class="form-group mb-3">
+                                                        <label for="nombre" class="form-label">
+                                                            Nombre del usuario:
+                                                        </label>
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               id="nombre1"
+                                                               name="nombre"
+                                                               th:value="${usuario.nombre}"
+                                                               required>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="apellido" class="form-label">
+                                                            Apellido del usuario:
+                                                        </label>
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               id="apellido1"
+                                                               name="apellido"
+                                                               th:value="${usuario.apellido}"
+                                                               required>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="email" class="form-label">
+                                                            Email del usuario:
+                                                        </label>
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               id="email1"
+                                                               name="email"
+                                                               th:value="${usuario.email}"
+                                                               required>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="areaId" class="form-label">Área:</label>
+                                                        <select class="form-control" id="areaId1" name="areaId">
+                                                            <option th:each="area : ${areas}"
+                                                                    th:value="${area.idArea}"
+                                                                    th:text="${area.nombre}"
+                                                                    th:selected="${usuario.area != null && usuario.area.idArea == area.idArea}">
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button"
+                                                            class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        Cancelar
+                                                    </button>
+                                                    <button type="submit"
+                                                            class="btn btn-primary">
+                                                        Guardar cambios
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal para confirmar la desactivación -->
+                                <div class="modal fade" th:id="${'deleteModal' + usuario.idUsuario}" tabindex="-1" role="dialog"
+                                     th:aria-labelledby="${'deleteModalLabel' + usuario.idUsuario}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" th:id="${'deleteModalLabel' + usuario.idUsuario}">Confirmar Desactivación</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>¿Seguro que desea desactivar al usuario?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                <form th:action="@{/usuarios/eliminar/{id}(id=${usuario.idUsuario})}" method="post">
+                                                    <button type="submit" class="btn btn-danger">Desactivar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal de Reactivación -->
+                                <div th:each="usuario : ${usuarios}">
+                                    <div class="modal fade" th:id="'reactivateModal' + ${usuario.idUsuario}" tabindex="-1"
+                                         aria-labelledby="reactivateModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="reactivateModalLabel">Reactivar Usuario</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    ¿Estás seguro de que deseas reactivar a este usuario?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <!-- El formulario para reactivar -->
+                                                    <form th:action="@{/usuarios/reactivar/{id}(id=${usuario.idUsuario})}" method="post">
+                                                        <button type="submit" class="btn btn-success">Reactivar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-center">
+                        <nav th:replace="pages/paginator-nav :: paginator"></nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

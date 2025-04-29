@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Title</title>
+
+</head>
+<body>
+<div class="main-content container-fluid" layout:fragment="content">
+    <div class="main-content container-fluid">
+        <div class="page-title">
+            <div class="row">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>GESTION DE MOVIMIENTOS</h3>
+                    <p class="text-subtitle text-muted"></p>
+                </div>
+                <div class="col-12 col-md-6 order-md-2 order-first">
+                    <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Lista de movimientos</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerta de éxito -->
+        <div th:if="${mensaje}" class="alert alert-success" role="alert">
+            <span th:text="${mensaje}"></span>
+            <a href="/inventario" class="btn btn-primary">Ver detalle</a>
+        </div>
+
+        <!-- Reportes -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form action="/movimientos/reporte" method="get" class="d-flex mb-4">
+                    <button type="submit" class="btn btn-primary">Generar Reporte de Entrada y Salida</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form action="/movimientos/reporteUtilidad" method="get" class="d-flex mb-4">
+                    <button type="submit" class="btn btn-success">Generar Reporte de Ingreso y Utilidad</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formularios de Entrada/Salida -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Formulario de Movimientos -->
+                        <form th:action="@{/movimientos/registrar}" method="post" th:object="${movimientoDTO}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Tipo de Movimiento</label>
+                                        <select class="form-control" th:field="*{tipo}" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="ENTRADA">Entrada</option>
+                                            <option value="SALIDA">Salida</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Producto</label>
+                                        <select class="form-control" th:field="*{productoId}" required>
+                                            <option value="">Seleccione producto...</option>
+                                            <option th:each="producto : ${productos}"
+                                                    th:value="${producto.idProducto}"
+                                                    th:text="${producto.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Cantidad</label>
+                                        <input type="number" class="form-control" th:field="*{cantidad}" min="1" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Precio Unitario</label>
+                                        <input type="number" step="0.01" class="form-control" th:field="*{precio}"
+                                               th:readonly="*{tipo == 'SALIDA'}" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Motivo</label>
+                                        <input type="text" class="form-control" th:field="*{motivo}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campo de Área para Administradores -->
+                            <div th:if="${isAdmin}" class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Área Responsable</label>
+                                        <select class="form-control" th:field="*{areaId}" required>
+                                            <option value="">Seleccione área...</option>
+                                            <option th:each="area : ${areas}"
+                                                    th:value="${area.idArea}"
+                                                    th:text="${area.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campo de Área para Usuarios Normales -->
+                            <div th:unless="${isAdmin}" class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Área Responsable</label>
+                                        <input type="text" class="form-control"
+                                               th:value="${areaUsuario != null ? areaUsuario.nombre : 'Área no asignada'}"
+                                               readonly>
+                                        <input type="hidden" th:field="*{areaId}"
+                                               th:value="${areaUsuario != null ? areaUsuario.idArea : ''}">
+                                        <small class="text-danger" th:if="${areaUsuario == null}">
+                                            No tienes un área asignada. Contacta al administrador.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Movimientos -->
+        <section class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Historial de Movimientos</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Área</th>
+                                <th>Motivo</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="movimiento : ${movimientos}">
+                                <td th:text="${movimiento.idMovimiento}"></td>
+                                <td th:text="${movimiento.producto.nombre}"></td>
+                                <td>
+                                    <span th:if="${movimiento.tipo == 'ENTRADA'}" class="badge bg-success">ENTRADA</span>
+                                    <span th:if="${movimiento.tipo == 'SALIDA'}" class="badge bg-danger">SALIDA</span>
+                                </td>
+                                <td th:text="${movimiento.cantidad}"></td>
+                                <td th:text="${movimiento.area.nombre}"></td>
+                                <td th:text="${movimiento.motivo}"></td>
+                                <td th:text="${'S/ ' + #numbers.formatDecimal(movimiento.precio, 1, 2)}"></td>
+                                <td th:text="${'S/ ' + #numbers.formatDecimal(movimiento.total, 1, 2)}"></td>
+                                <td>
+                                    <span th:if="${movimiento.estado == 'ACTIVO'}" class="badge bg-success">ACTIVO</span>
+                                    <span th:if="${movimiento.estado == 'INACTIVO'}" class="badge bg-secondary">INACTIVO</span>
+                                </td>
+                                <td th:text="${#temporals.format(movimiento.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.getElementById('tipo').addEventListener('change', function() {
+        const tipo = this.value;
+        const precioInput = document.getElementById('precio');
+
+        if (tipo === 'SALIDA') {
+            precioInput.readOnly = true;
+            // Obtener precio automático del inventario
+            const productoId = document.getElementById('productoId').value;
+            if (productoId) {
+                fetch('/inventario/precio/' + productoId)
+                    .then(response => response.json())
+                    .then(data => {
+                        precioInput.value = data.precio;
+                    });
+            }
+        } else {
+            precioInput.readOnly = false;
+            precioInput.value = '';
+        }
+    });
+</script>
+
+
+</body>
+</html>
