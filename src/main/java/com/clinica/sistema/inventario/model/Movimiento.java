@@ -1,6 +1,7 @@
 package com.clinica.sistema.inventario.model;
 
 
+import com.clinica.sistema.inventario.util.RedondeoUtil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,12 +58,15 @@ public class Movimiento {
 
     // Métodos adicionales si necesitas lógica específica
     public void calcularTotal() {
-        this.total = this.cantidad * this.precio;
+        this.precio = RedondeoUtil.redondear(this.precio);
+        this.total = RedondeoUtil.redondear(this.cantidad * this.precio);
     }
 
     public String getFechaFormateada() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return this.fecha.format(formatter);
     }
+
+
 
 }

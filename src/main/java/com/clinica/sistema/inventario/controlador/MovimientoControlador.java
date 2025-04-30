@@ -5,6 +5,8 @@ import com.clinica.sistema.inventario.controlador.dto.MovimientoDTO;
 import com.clinica.sistema.inventario.model.*;
 import com.clinica.sistema.inventario.repository.InventarioRepositorio;
 import com.clinica.sistema.inventario.service.*;
+import com.clinica.sistema.inventario.util.RedondeoUtil;
+import com.clinica.sistema.inventario.util.paginacion.PageRender;
 import com.clinica.sistema.inventario.util.reportes.MovimientoExporterPDF;
 import com.clinica.sistema.inventario.util.reportes.MovimientoUtilidadExporterPDF;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +30,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -86,12 +90,17 @@ public class MovimientoControlador {
                 throw new IllegalStateException("El usuario no tiene un área asignada. Contacte al administrador.");
             }
 
+            Pageable pageable = PageRequest.of(page, 10);
+            Page<Movimiento> movimientosPage = movimientoServicio.findAll(pageable);
+
 
             model.addAttribute("productos", productoService.findAll());
             model.addAttribute("movimientoDTO", new MovimientoDTO());
             model.addAttribute("areas", areaServicio.listarAreasActivas());
             model.addAttribute("areaUsuario", areaUsuario);
             model.addAttribute("movimientos", movimientoServicio.findAll());
+            model.addAttribute("movimientos", movimientosPage.getContent());
+            model.addAttribute("page", new PageRender<>("/movimientos", movimientosPage));
             model.addAttribute("isAdmin", isAdmin);
             manejarMensajes(model, exito, error);
 
@@ -165,7 +174,8 @@ public class MovimientoControlador {
         Movimiento movimiento = new Movimiento();
         movimiento.setTipo(movimientoDTO.getTipo());
         movimiento.setCantidad(movimientoDTO.getCantidad());
-        movimiento.setPrecio(movimientoDTO.getPrecio());
+        movimiento.setPrecio(calcularPrecioMovimiento(movimientoDTO));
+        movimiento.setFecha(movimientoDTO.getFecha() != null ? movimientoDTO.getFecha() : LocalDateTime.now());
 //        movimiento.setPrecio(calcularPrecioMovimiento(movimientoDTO));
         movimiento.setMotivo(movimientoDTO.getMotivo());
         movimiento.setEstado("ACTIVO");
@@ -177,12 +187,15 @@ public class MovimientoControlador {
     }
 
     private double calcularPrecioMovimiento(MovimientoDTO movimientoDTO) {
-        if ("SALIDA".equals(movimientoDTO.getTipo())) {
-            return Optional.ofNullable(inventarioServicio.findByProductoIdProducto(movimientoDTO.getProductoId()))
-                    .map(Inventario::getPrecio)
-                    .orElseThrow(() -> new RuntimeException("No se pudo obtener el precio del producto"));
+        if ("SALIDA".equalsIgnoreCase(movimientoDTO.getTipo())) {
+            Inventario inventario = inventarioServicio.findByProductoIdProducto(movimientoDTO.getProductoId());
+            if (inventario == null) {
+                throw new RuntimeException("No se encontró inventario para el producto seleccionado");
+            }
+            return RedondeoUtil.redondear(inventario.getPrecio()); // aplica redondeo
+        } else {
+            return RedondeoUtil.redondear(movimientoDTO.getPrecio()); // redondear entrada también
         }
-        return movimientoDTO.getPrecio();
     }
 
     private Area determinarArea(Usuario usuario, Long areaId, boolean isAdmin) {

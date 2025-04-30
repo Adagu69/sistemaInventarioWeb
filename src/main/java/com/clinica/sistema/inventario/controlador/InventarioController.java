@@ -3,10 +3,14 @@ package com.clinica.sistema.inventario.controlador;
 import com.clinica.sistema.inventario.model.Inventario;
 import com.clinica.sistema.inventario.repository.InventarioRepositorio;
 import com.clinica.sistema.inventario.service.InventarioServicio;
+import com.clinica.sistema.inventario.util.paginacion.PageRender;
 import com.clinica.sistema.inventario.util.reportes.InventarioExporterPDF;
 import com.clinica.sistema.inventario.util.reportes.InventarioPromedioExporterPDF;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -31,7 +35,13 @@ public class InventarioController {
 
     // Mostrar inventarios con productos asociados
     @GetMapping("/inventario")
-    public String mostrarInventario(Model model) {
+    public String mostrarInventario(@RequestParam(name = "page", defaultValue = "0") int page,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Inventario> inventariosPage = inventarioRepositorio.findAll(pageable);
+
+        model.addAttribute("inventarios", inventariosPage.getContent());
+        model.addAttribute("page", new PageRender<>("/inventario", inventariosPage));
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             boolean isAdmin = false;
@@ -40,6 +50,8 @@ public class InventarioController {
                 isAdmin = true;
             }
             model.addAttribute("isAdmin", isAdmin);
+
+
             // Obtener todos los inventarios de la base de datos
             List<Inventario> inventarioList = inventarioRepositorio.findAll();
             model.addAttribute("inventarios", inventarioList); // Pasar la lista de inventarios a la vista

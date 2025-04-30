@@ -1,10 +1,12 @@
 package com.clinica.sistema.inventario.controlador.dto;
 
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 public class MovimientoDTO {
     @NotBlank private String tipo; // ENTRADA o SALIDA
@@ -12,18 +14,21 @@ public class MovimientoDTO {
     @DecimalMin("0.01") private double precio;
     @NotBlank private String motivo;
     @NotNull private Long productoId;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime fecha;
     private Long areaId; // No requerido para usuarios normales
 
     public MovimientoDTO() {
     }
 
-    public MovimientoDTO(String tipo, int cantidad, double precio, String motivo, Long productoId, Long areaId) {
+    public MovimientoDTO(String tipo, int cantidad, double precio, String motivo, Long productoId, Long areaId,LocalDateTime fecha) {
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.precio = precio;
         this.motivo = motivo;
         this.productoId = productoId;
         this.areaId = areaId;
+        this.fecha = fecha;
     }
 
     public String getTipo() {
@@ -78,5 +83,13 @@ public class MovimientoDTO {
         if (isAdmin && areaId == null) {
             throw new IllegalArgumentException("El administrador debe seleccionar un área");
         }
+    }
+
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
     }
 }

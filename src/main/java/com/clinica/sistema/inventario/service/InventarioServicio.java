@@ -5,6 +5,8 @@ import com.clinica.sistema.inventario.model.Inventario;
 import com.clinica.sistema.inventario.model.Producto;
 import com.clinica.sistema.inventario.repository.InventarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +42,11 @@ public class InventarioServicio implements IInventarioServicio {
     @Override
     public Inventario save(Inventario inventario) {
         return inventarioRepositorio.save(inventario);
+    }
+
+    @Override
+    public Page<Inventario> findAll(Pageable pageable) {
+        return inventarioRepositorio.findAll(pageable);
     }
 
     @Override

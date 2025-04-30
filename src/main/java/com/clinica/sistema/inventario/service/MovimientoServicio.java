@@ -5,11 +5,14 @@ import com.clinica.sistema.inventario.model.*;
 import com.clinica.sistema.inventario.repository.InventarioRepositorio;
 import com.clinica.sistema.inventario.repository.MovimientoRepositorio;
 import com.clinica.sistema.inventario.repository.UsuarioRepositorio;
+import com.clinica.sistema.inventario.util.RedondeoUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -74,7 +77,7 @@ public class MovimientoServicio implements IMovimientoServicio {
         actualizarInventarioSegunMovimiento(inventario, movimiento);
 
         // Configurar movimiento
-        movimiento.setFecha(LocalDateTime.now());
+        //movimiento.setFecha(LocalDateTime.now());
         movimiento.setTotal(movimiento.getCantidad() * movimiento.getPrecio());
         movimiento.setEstado("ACTIVO");
 
@@ -95,7 +98,7 @@ public class MovimientoServicio implements IMovimientoServicio {
     private void actualizarInventarioSegunMovimiento(Inventario inventario, Movimiento movimiento) {
         if ("ENTRADA".equals(movimiento.getTipo())) {
             inventario.setCantidad(inventario.getCantidad() + movimiento.getCantidad());
-            inventario.setPrecio(movimiento.getPrecio());
+            inventario.setPrecio(RedondeoUtil.redondear(movimiento.getPrecio()));
         } else if ("SALIDA".equals(movimiento.getTipo())) {
             validarStockSuficiente(inventario, movimiento.getCantidad());
             inventario.setCantidad(inventario.getCantidad() - movimiento.getCantidad());
@@ -191,6 +194,11 @@ public class MovimientoServicio implements IMovimientoServicio {
     @Override
     public List<Movimiento> buscarMovimientosPorMotivo(String motivo) {
         return List.of();
+    }
+
+    @Override
+    public Page<Movimiento> findAll(Pageable pageable) {
+        return movimientoRepository.findAll(pageable);
     }
 
     @Autowired
