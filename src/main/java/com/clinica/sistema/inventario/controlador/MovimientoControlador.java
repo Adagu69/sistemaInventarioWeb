@@ -210,42 +210,43 @@ public class MovimientoControlador {
         redirectAttributes.addFlashAttribute("mensaje", "Error al registrar movimiento: " + e.getMessage());
         redirectAttributes.addFlashAttribute("tipoMensaje", "error");
     }
+
+    @GetMapping("/reporte")
+    public void generarReporte(HttpServletResponse response) {
+        try {
+            // Configurar la respuesta para que sea un archivo PDF
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_movimientos.pdf\"");
+
+            // Obtener los movimientos de entrada y salida
+            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
+            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
+
+            // Llamar al servicio para exportar a PDF
+            movimientoExporterPDF.exportar(entradas, salidas, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/reporteUtilidad")
+    public void generarReporteUtilidad(HttpServletResponse response) {
+        try {
+            // Configurar la respuesta para que sea un archivo PDF
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_utilidad.pdf\"");
+
+            // Obtener todos los movimientos de entrada y salida
+            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
+            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
+
+            // Llamar al método de exportación de la clase MovimientoUtilidadExporterPDF
+            movimientoUtilidadExporterPDF.exportar(entradas, salidas, response);
+        } catch (Exception e) {
+            e.printStackTrace();  // Mejorar manejo de errores en producción
+        }
+    }
 }
 
-//    @GetMapping("/reporte")
-//    public void generarReporte(HttpServletResponse response) {
-//        try {
-//            // Configurar la respuesta para que sea un archivo PDF
-//            response.setContentType("application/pdf");
-//            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_movimientos.pdf\"");
-//
-//            // Obtener los movimientos de entrada y salida
-//            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
-//            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
-//
-//            // Llamar al servicio para exportar a PDF
-//            movimientoExporterPDF.exportar(entradas, salidas, response);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
-    // Método adicional para generar un reporte de ingreso/utilidad
-//    @GetMapping("/reporteUtilidad")
-//    public void generarReporteUtilidad(HttpServletResponse response) {
-//        try {
-//            // Configurar la respuesta para que sea un archivo PDF
-//            response.setContentType("application/pdf");
-//            response.setHeader("Content-Disposition", "attachment; filename=\"reporte_utilidad.pdf\"");
-//
-//            // Obtener todos los movimientos de entrada y salida
-//            List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
-//            List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
-//
-//            // Llamar al método de exportación de la clase MovimientoUtilidadExporterPDF
-//            movimientoUtilidadExporterPDF.exportar(entradas, salidas, response);
-//        } catch (Exception e) {
-//            e.printStackTrace();  // Mejorar manejo de errores en producción
-//        }
-//    }
 

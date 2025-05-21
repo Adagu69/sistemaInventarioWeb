@@ -35,7 +35,7 @@ public class Producto {
     @JoinColumn(name = "proveedor_id")
     private Proveedor proveedor;
 
-    @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private DetalleProducto detalleProducto;
 
     @OneToMany(mappedBy = "producto")

@@ -28,7 +28,7 @@ public class DetalleProducto {
     private double total;
 
     @OneToOne
-    @JoinColumn(name = "producto_id")
+    @JoinColumn(name = "producto_id", nullable = false, unique = true)
     private Producto producto;
 
     @Column(name = "especificaciones")

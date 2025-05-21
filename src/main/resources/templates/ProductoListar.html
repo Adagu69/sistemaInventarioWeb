@@ -42,7 +42,7 @@
                             <i class="bi bi-plus-lg"></i> Agregar Producto
                         </button>
                     </div>
-                    <!-- Fin Botón de Agregar Producto -->
+
 
                     <div class="d-flex ">
                         <!-- Inicio Formulario para generar reporte -->
@@ -160,20 +160,130 @@
                                 <td class="text-center" th:text="${producto.descripcion}"></td>
                                 <td class="text-center" th:text="${producto.categoria.nombre}"></td>
                                 <td class="text-center" th:text="${producto.proveedor.nombre}"></td>
-                                <td>
+                                <td class="text-center">
                                     <div class="d-flex gap-1 justify-content-center">
                                         <button th:if="${isAdmin}" class="btn btn-primary btn-sm"
                                                 data-bs-toggle="modal"
                                                 th:data-bs-target="'#editarModal' + ${producto.idProducto}">
-                                            Editar
+                                            <i class="bi bi-pencil-square"></i>
                                         </button>
+
                                         <button th:if="${isAdmin}" class="btn btn-danger btn-sm"
                                                 data-bs-toggle="modal"
                                                 th:data-bs-target="'#eliminarModal' + ${producto.idProducto}">
-                                            Eliminar
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+
+                                        <!-- Botón VER DETALLE -->
+                                        <button th:if="${isAdmin}" class="btn btn-outline-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#verDetalleModal' + ${producto.idProducto}" title="Ver Detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+
+                                        <!-- Botón EDITAR DETALLE -->
+                                        <button class="btn btn-outline-warning btn-sm"
+                                                th:if="${producto.detalleProducto != null}"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#editarDetalleModal' + ${producto.idProducto}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+
+                                        <!-- Agregar -->
+                                        <button class="btn btn-outline-primary btn-sm"
+                                                th:if="${producto.detalleProducto == null}"
+                                                data-bs-toggle="modal"
+                                                th:data-bs-target="'#modalDetalle' + ${producto.idProducto}">
+                                            <i class="bi bi-plus-circle"></i>
                                         </button>
                                     </div>
                                 </td>
+
+
+                                <!-- Modal Detalle Producto (Agregar o Editar) -->
+                                <!-- MODAL VER DETALLE -->
+                                <div class="modal fade" th:id="'verDetalleModal' + ${producto.idProducto}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-info text-white">
+                                                <h5 class="modal-title">Detalle del Producto</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Cantidad:</strong> <span th:text="${producto.detalleProducto?.cantidad}"></span></p>
+                                                <p><strong>Precio:</strong> S/ <span th:text="${producto.detalleProducto?.precio}"></span></p>
+                                                <p><strong>Total:</strong> S/ <span th:text="${producto.detalleProducto?.total}"></span></p>
+                                                <p><strong>Especificaciones:</strong></p>
+                                                <p th:text="${producto.detalleProducto?.especificaciones}"></p>
+                                                <p><strong>Garantía:</strong> <span th:text="${producto.detalleProducto?.garantia}"></span></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- MODAL EDITAR DETALLE -->
+                                <div class="modal fade" th:id="'editarDetalleModal' + ${producto.idProducto}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form th:action="@{/producto/guardarDetalle}" method="post">
+                                                <div class="modal-header bg-warning">
+                                                    <h5 class="modal-title">Editar Detalle</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="idProducto" th:value="${producto.idProducto}" />
+                                                    <div class="mb-2">
+                                                        <label>Especificaciones</label>
+                                                        <textarea name="especificaciones" class="form-control"
+                                                                  th:text="${producto.detalleProducto?.especificaciones}"></textarea>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label>Garantía</label>
+                                                        <input type="text" name="garantia" class="form-control"
+                                                               th:value="${producto.detalleProducto?.garantia}" />
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- MODAL AGREGAR DETALLE -->
+                                <div class="modal fade" th:id="'agregarDetalleModal' + ${producto.idProducto}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form th:action="@{/producto/guardarDetalle}" method="post">
+                                                <div class="modal-header bg-secondary text-white">
+                                                    <h5 class="modal-title">Agregar Detalle</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="idProducto" th:value="${producto.idProducto}" />
+                                                    <div class="mb-2">
+                                                        <label>Especificaciones</label>
+                                                        <textarea name="especificaciones" class="form-control"></textarea>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label>Garantía</label>
+                                                        <input type="text" name="garantia" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-success">Guardar Detalle</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <!-- Modal Editar Producto -->
                                 <div class="modal fade" th:id="'editarModal' + ${producto.idProducto}" tabindex="-1"
@@ -241,6 +351,7 @@
                                     </div>
                                 </div>
 
+
                                 <!-- Modal Eliminar Producto -->
                                 <div class="modal fade" th:id="'eliminarModal' + ${producto.idProducto}"
                                      tabindex="-1"
@@ -269,6 +380,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </tr>
                             </tbody>
                         </table>

@@ -4,6 +4,7 @@ import com.clinica.sistema.inventario.model.Inventario;
 import com.clinica.sistema.inventario.repository.InventarioRepositorio;
 import com.clinica.sistema.inventario.service.InventarioServicio;
 import com.clinica.sistema.inventario.util.paginacion.PageRender;
+import com.clinica.sistema.inventario.util.reportes.InventarioExporterExcel;
 import com.clinica.sistema.inventario.util.reportes.InventarioExporterPDF;
 import com.clinica.sistema.inventario.util.reportes.InventarioPromedioExporterPDF;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +103,13 @@ public class InventarioController {
 
         List<Inventario> inventarios = inventarioRepositorio.findAll();
         InventarioPromedioExporterPDF exporter = new InventarioPromedioExporterPDF(inventarios);
+        exporter.exportar(response);
+    }
+
+    @GetMapping("/inventario/exportarExcel")
+    public void exportarExcel(HttpServletResponse response) throws IOException {
+        List<Inventario> listaInventario = inventarioServicio.findAll(); // usa tu método de servicio
+        InventarioExporterExcel exporter = new InventarioExporterExcel(listaInventario);
         exporter.exportar(response);
     }
 

@@ -51,6 +51,14 @@
                             </form>
                         </div>
 
+                        <div class="input-group mb-3 me-2">
+                        <form th:action="@{/inventario/exportarExcel}" method="get">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                            </button>
+                        </form>
+                        </div>
+
                         <div class="input-group mb-3">
                             <!-- Formulario para generar reporte de máximo/mínimo/promedio -->
                             <form action="/inventario/promedio/exportar" method="get" class="d-flex mb-3">
