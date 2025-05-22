@@ -8,6 +8,7 @@ import com.clinica.sistema.inventario.service.*;
 import com.clinica.sistema.inventario.util.RedondeoUtil;
 import com.clinica.sistema.inventario.util.paginacion.PageRender;
 import com.clinica.sistema.inventario.util.reportes.MovimientoExporterPDF;
+import com.clinica.sistema.inventario.util.reportes.MovimientoResumenExporterExcel;
 import com.clinica.sistema.inventario.util.reportes.MovimientoUtilidadExporterPDF;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -59,6 +61,9 @@ public class MovimientoControlador {
 
     @Autowired
     private MovimientoUtilidadExporterPDF movimientoUtilidadExporterPDF;
+
+    @Autowired
+    private MovimientoResumenExporterExcel movimientoResumenExporterExcel;
 
     private boolean isAdmin(Principal principal) {
         if (principal == null) return false;
@@ -245,6 +250,13 @@ public class MovimientoControlador {
         } catch (Exception e) {
             e.printStackTrace();  // Mejorar manejo de errores en producción
         }
+    }
+
+    @GetMapping("/exportar-excel-resumen")
+    public void exportarExcelResumen(HttpServletResponse response) throws IOException {
+        List<Movimiento> entradas = movimientoServicio.findByTipo("ENTRADA");
+        List<Movimiento> salidas = movimientoServicio.findByTipo("SALIDA");
+        movimientoResumenExporterExcel.exportar(entradas, salidas, response);
     }
 }
 

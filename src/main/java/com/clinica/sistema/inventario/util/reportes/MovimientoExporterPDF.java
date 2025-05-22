@@ -50,7 +50,7 @@ public class MovimientoExporterPDF {
             // Agregar título
             Font fuenteTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24);
             fuenteTitulo.setColor(new Color(0, 51, 102)); // Azul oscuro
-            Paragraph titulo = new Paragraph("Salud Vida", fuenteTitulo);
+            Paragraph titulo = new Paragraph("Clinica Mundo Salud", fuenteTitulo);
             titulo.setAlignment(Element.ALIGN_CENTER);
             document.add(titulo);
 
@@ -64,11 +64,11 @@ public class MovimientoExporterPDF {
             // Información de contacto y dirección
             Font fuenteInfo = FontFactory.getFont(FontFactory.HELVETICA, 12);
             fuenteInfo.setColor(Color.BLACK);
-            Paragraph contacto = new Paragraph("Contacto: info@saludvida.com", fuenteInfo);
+            Paragraph contacto = new Paragraph("Contacto: clinicacms@gmail.com", fuenteInfo);
             contacto.setAlignment(Element.ALIGN_CENTER);
             document.add(contacto);
 
-            Paragraph direccion = new Paragraph("Dirección: Calle Ficticia 123", fuenteInfo);
+            Paragraph direccion = new Paragraph("Dirección: Avenida Carlos Izaguirre cuadra 16", fuenteInfo);
             direccion.setAlignment(Element.ALIGN_CENTER);
             document.add(direccion);
 
